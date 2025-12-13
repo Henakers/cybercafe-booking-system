@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberkafé</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <!-- JavaScript -->
+    <script src="js/documentLoaded.js"></script>
+    <script src="js/view.js"></script>
+    <script src="js/historyHandler.js"></script>
+    <script src="js/formHandler.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/canvasFrames.js"></script>
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Favicon -->
+    <link rel="icon" href="./assets/icons/favicon-32x32.png" type="image/x-icon">
+
+</head>
+
+<body>
+    <!-- # REACT -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- # CANVAS BG -->
+    <canvas id="canvas" class="canvas-bg" width="500" height="500">Din webbläsare stödjer inte canvas!</canvas>
+
+    <header id="header" class="header">
+
+        <!-- || SEARCH (Drop Down) -->
+        <div class="search-wrapper">
+            <!-- search icon -->
+            <button id="search" class="btn btn--search">
+                <span class="btn__icon btn__icon--search material-icons">search</span>
+            </button>
+            <!-- clear/close button -->
+            <button id="search-clear" class="btn btn--search-clear">
+                <span class=" btn__icon material-icons">close</span>
+            </button>
+            <!-- input field  -->
+            <input autocorrect="off" id="search-input" class="search-wrapper__input" type="search" name="search"
+                aria-label="search" placeholder="Sök efter bokningsbar resurs..." autocomplete="off">
+
+            <!-- Search result -->
+            <div id="search-result" class="search-wrapper__result">
+                <!-- * här visas sökresultat i en tabell src:search.js -> showSearchResult() -->
+            </div>
+        </div>
+
+        <nav class="nav">
+            <!-- nav links -->
+            <button value="page-home" class="btn btn--ghost active"
+                onclick="showPage('page-home')"><span>Hem</span></button>
+            <button value="page-booking" class="btn btn--ghost" onclick="showPage('page-booking')">Boka tid</button>
+
+            <!-- login - register -->
+            <div id="auth-buttons" class="nav__user-links">
+                <button value="login-modal" class="modal-open btn btn--outlined">Logga in</button>
+                <button value="register-modal" class="modal-open btn btn--outlined-inverted">Registrera</button>
+            </div>
+
+            <!-- profile -->
+            <button id="profile-button" value="profile-modal" class="modal-open btn btn--ghost">
+                <span class="btn__icon material-icons">account_circle</span>
+            </button>
+            <!-- logout -->
+            <button id="logout-button" class="btn btn--red">
+                <span class="btn__icon material-icons">logout</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- * Pages: home, book, search, login, register, profile -->
+    <!-- # || HOME (page) -->
+    <main id="page-home" class="page page--home">
+        <div class="page__wrapper">
+            <h1 class="page__heading">Välkommen Till cyberkafé</h1>
+            <h2 class="page__sub-heading">Redo att boka ditt nästa gaming äventyr?</h2>
+    
+            <p class="page__paragraph">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi quia quidem, eligendi
+                architecto sequi vel facilis atque dolores perferendis assumenda ullam autem doloremque cum aspernatur
+                corporis placeat quos laboriosam ex!</p>
+    
+            <button class="btn btn--primary btn--page">Boka idag</button>
+        </div>
+    </main>
+
+    <!-- # || BOOKING (Page) -->
+    <main id="page-booking" class="page page--booking">
+        <div class="page__wrapper">
+            <div class="card card--ui">
+                <h1 class="card__heading">Boka tid</h1>
+                <p class="card__paragraph">Just nu är det endast möjligt att boka en dag per bokning. Och om önskning av att
+                    boka flera resurser finns, ber vi dig vänligt genomföra respektive bokning för sig.
+                </p>
+                <p class="card__paragraph">Välj först vilken dag du vill boka i datumväljaren här under, sedan vilken resurs
+                    som önskas bokas.
+                </p>
+
+                <div class="card__content-area">
+                    <!-- TODO fixa date picker med knapp och attribut source: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/showPicker -->
+                    <label class="card__sub-heading" for="booking-date">Välj datum</label>
+                    <input required type="date" name="booking-date" id="booking-date">
+                    <button class="btn btn--outlined-inverted btn--max-content" onclick="openDate()">Välj datum</button>
+                </div>
+
+
+                <!-- övriga informationsrutor -->
+                <div class="card__content-area">
+                    <label class="card__sub-heading" for="booking-resource-options">Välj resurs</label>
+                    <select name="booking-resource-options" id="booking-resource-options" required>
+                        <option value="" disabled selected hidden>- Välj resurs -</option>
+                        <!-- Läggs till dynamiskt från API med JS -->
+                    </select>
+
+
+                    <div id="booking-form-error-message" class="form-error-msg"></div>
+
+
+                    <!-- TODO bokningsbara resurser - fixa dynamiskt i JS -->
+                    <!-- <div class="booking-ui">
+                        <div class="booking-ui__resource"></div>
+                        <div class="booking-ui__resource"></div>
+                    </div> -->
+                </div>
+                <button id="booking-submit" class="btn btn--primary">Boka resurs
+                    <!-- TODO laddningsanimation -->
+                    <!-- <img src="../assets/images/loading_animation.gif" height="25px" width="25px"></div> -->
+                </button>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- # || LOGIN (modal) -->
+    <!-- Documentation: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog -->
+    <dialog id="login-modal" class="modal" closedby="none">
+        <div class="modal__wrapper">
+            <!-- Stängnings knapp -->
+            <button value="login-modal" class="btn btn--ghost modal__close"><span
+                    class="btn__icon material-icons">close</span></button>
+            <!-- rubrik -->
+            <h2 class="modal__header">logga in</h2>
+            <!-- input fält -->
+            <div class="modal__input-wrapper">
+                <div class="modal__input-group--split">
+                    <div class="modal__input-group">
+                        <label for="login-firstname" class="modal__label">Förnamn<span
+                                class="modal__required-icon">*</span></label>
+                        <input autocomplete="given-name" required id="login-firstname" class="input modal__input"
+                            name="login-firstname" type="text" autofocus>
+                    </div>
+                    <div class="modal__input-group">
+                        <label for="login-lastname" class="modal__label">Efternamn<span
+                                class="modal__required-icon">*</span></label>
+                        <input autocomplete="family-name" id="login-lastname" class="input modal__input"
+                            name="login-lastname" type="text">
+                    </div>
+                </div>
+            </div>
+            <!-- skicka knapp -->
+            <button id="login-submit" class="btn btn--primary" type="submit">Logga in</button>
+            <!-- error meddelande -->
+            <div id="login-form-error-message" class="form-error-msg"></div>
+        </div>
+    </dialog>
+
+    <!-- # || REGISTER (modal) -->
+    <dialog id="register-modal" class="modal" closedby="none">
+        <div class="modal__wrapper">
+            <!-- Stängnings knapp -->
+            <button value="register-modal" class="btn btn--ghost modal__close"><span
+                    class="btn__icon material-icons">close</span></button>
+            <!-- rubrik -->
+            <h2 class="modal__header">Registrera</h2>
+            <!-- input fält -->
+            <div class="modal__input-wrapper">
+                <!-- Förnamn + efternamn -->
+                <div class="modal__input-group--split">
+                    <div class="modal__input-group">
+                        <label for="register-firstname" class="modal__label">Förnamn<span
+                                class="modal__required-icon">*</span></label>
+                        <input autocomplete="given-name" required id="register-firstname" class="input modal__input"
+                            name="register-firstname" type="text" autofocus>
+                    </div>
+                    <div class="modal__input-group">
+                        <label for="register-lastname" class="modal__label">Efternamn<span
+                                class="modal__required-icon">*</span></label>
+                        <input autocomplete="family-name" required id="register-lastname" class="input modal__input"
+                            name="register-lastname" type="text">
+                    </div>
+                </div>
+                <!-- e-post -->
+                <div class="modal__input-group">
+                    <label for="register-email" class="modal__label">E-post<span
+                            class="modal__required-icon">*</span></label>
+                    <input autocomplete="email" required id="register-email" class="input modal__input"
+                        name="register-email" type="email">
+                </div>
+                <!-- adress -->
+                <div class="modal__input-group">
+                    <label for="register-address" class="modal__label">Adress<span
+                            class="modal__required-icon">*</span></label>
+                    <input autocomplete="street-address" required id="register-address" class="input modal__input"
+                        name="register-address" type="text">
+                </div>
+                <!-- zip -->
+                <div class="modal__input-group">
+                    <label for="register-zip" class="modal__label">Postnummer<span
+                            class="modal__required-icon">*</span></label>
+                    <div class="range-input">
+                        <input required class="range-input__input" type="range" name="register-zip" id="register-zip"
+                            min="0" max="99999" value="50000">
+                        <span id="register-zip-value" class="range-input__value">500 00</span>
+                    </div>
+                </div>
+                <!-- terms -->
+                <div class="modal__input-group modal__input-group--checkbox">
+                    <input required type="checkbox" name="register-terms" id="register-terms">
+                    <label for="register-terms" class="modal__label modal__label--secondary">Jag godkänner <a href="#"
+                            disable target="_blank" rel="noopener noreferrer">terms of service</a><span
+                            class="modal__required-icon">*</span></label>
+                </div>
+                <!-- newsletter -->
+                <div class="modal__input-group modal__input-group--checkbox">
+                    <input type="checkbox" name="register-newsletter" id="register-newsletter">
+                    <label for="register-newsletter" class="modal__label modal__label--secondary">Jag vill prenumerera
+                        på erat nyhetsmejl.</label>
+                </div>
+            </div>
+            <!-- skicka knapp -->
+            <button id="register-submit" class="btn btn--primary" type="submit">Registrera konto</button>
+            <!-- validation feedback -->
+            <div id="register-form-error-message" class="form-error-msg"></div>
+
+        </div>
+    </dialog>
+
+    <!-- # || PROFILE (modal) -->
+    <dialog id="profile-modal" class="modal modal--profile" closedby="none">
+        <div class="modal__wrapper">
+            <!-- Stängnings knapp -->
+            <button value="profile-modal" class="btn btn--ghost modal__close"><span
+                    class="btn__icon material-icons">close</span></button>
+            <!-- rubrik profil -->
+            <h2 class="modal__header">Profil</h2>
+            <div class="modal__content-wrapper">
+                <p class="modal__paragraph modal__paragraph--highlighted">Namn namnsson</p>
+                <p class="modal__paragraph">ID: 10100001010</p>
+            </div>
+            <!-- rubrik tidigare bokningar -->
+            <h2 class="modal__header">Tidigare bokningar</h2>
+            <div id="user-bookings-content" class="modal__content-wrapper">
+                <!-- tabell -->
+                <!--# REACT -->
+                <script type="text/babel">
+
+                    function Booking(props) {
+                        return (
+                            <tr className="table__row">
+                                <td className="table__cell">{props.resourceID}</td>
+                                <td className="table__cell">{props.name}</td>
+                                <td className="table__cell">{props.company}</td>
+                                <td className="table__cell table__cell--highlighted">{props.location}</td>
+                                <td className="table__cell">{props.date}</td>
+                                <td className="table__cell">{props.position}</td>
+                                <td className="table__cell">{props.cost}</td>
+                                <td className="table__cell">{props.category}</td>
+                            </tr>
+                        );
+                    }
+
+                    function AllBookings({ bookings }) {
+                        return (
+                            <table className="table">
+                                <thead>
+                                    <tr className="table__row table__row--header">
+                                        <th className="table__cell table__cell--header">resourceID</th>
+                                        <th className="table__cell table__cell--header">name</th>
+                                        <th className="table__cell table__cell--header">company</th>
+                                        <th className="table__cell table__cell--header">location</th>
+                                        <th className="table__cell table__cell--header">date</th>
+                                        <th className="table__cell table__cell--header">position</th>
+                                        <th className="table__cell table__cell--header">cost</th>
+                                        <th className="table__cell table__cell--header">category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bookings.map((booking) => (
+                                        <Booking
+                                            key={booking.key}
+                                            resourceID={booking.resourceID}
+                                            name={booking.name}
+                                            company={booking.company}
+                                            location={booking.location}
+                                            date={booking.date}
+                                            position={booking.position}
+                                            cost={booking.cost}
+                                            category={booking.category}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                        );
+                    }
+
+
+                    // rendera bookings för användaren med React
+                    function renderUserBookings(returnedData) {
+
+                        console.log(returnedData);
+
+                        ReactDOM.render(
+                            <AllBookings bookings={returnedData} />,
+                            document.getElementById('user-bookings-content')
+                        );
+                    }
+                </script>
+
+
+            </div>
+        </div>
+    </dialog>
+
+
+    <!-- ! DEBUG -->
+    <div id="printer">
+        <div id="print-area"></div>
+        <button id="clear-printer" class="btn btn--outlined-inverted" type="reset"
+            onclick="clearPrinter()">Clear</button>
+    </div>
+    <div class="color-wrapper">
+        <div>primary</div>
+        <div>success</div>
+        <div>warning</div>
+        <div>error</div>
+        <div>Övrigt test</div>
+    </div>
+</body>
+
+</html>
