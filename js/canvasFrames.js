@@ -1,5 +1,5 @@
 
-function ExplosionAnimFrame4() {
+function ExplosionAnimFrame4(ctx) {
     ctx.globalAlpha = 1.0;
     //--==## SVGID_1_ radialGradient ##==--
     var SVGID_1_ = ctx.createRadialGradient(1, 598, 0, 1, 598, 173);
@@ -464,7 +464,7 @@ function ExplosionAnimFrame4() {
     ctx.fill();
 }
 
-function ExplosionAnimFrame3() {
+function ExplosionAnimFrame3(ctx) {
     //--==## SVGID_8_ radialGradient ##==--
     var SVGID_8_ = ctx.createRadialGradient(2, 596, 0, 2, 596, 159);
     SVGID_8_.addColorStop(0, 'RGB(243,144,63)');
@@ -801,7 +801,7 @@ function ExplosionAnimFrame3() {
     ctx.fill();
 }
 
-function ExplosionAnimFrame2() {
+function ExplosionAnimFrame2(ctx) {
     //--==## SVGID_10_ radialGradient ##==--
     var SVGID_10_ = ctx.createRadialGradient(-7, 595, 0, -7, 595, 84);
     SVGID_10_.addColorStop(0, 'RGB(243,144,63)');
@@ -936,7 +936,7 @@ function ExplosionAnimFrame2() {
     ctx.fill();
 }
 
-function ExplosionAnimFrame1() {
+function ExplosionAnimFrame1(ctx) {
     //--==## SVGID_12_ radialGradient ##==--
     var SVGID_12_ = ctx.createRadialGradient(0, 593, 0, 0, 593, 50);
     SVGID_12_.addColorStop(0, 'RGB(243,144,63)');
@@ -1024,11 +1024,11 @@ function ExplosionAnimFrame1() {
     ctx.fill();
 }
 
-function StarFrame() {
+function StarFrame(ctx) {
     // image of star
 }
 
-function MoonFrame() {
+function MoonFrame(ctx) {
     ctx.globalAlpha = 1.0;
     // background
     ctx.fillStyle = '#efefd5';

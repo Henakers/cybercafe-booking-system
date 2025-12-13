@@ -30,7 +30,7 @@ class Vector2 {
 }
 
 class Sprite2D {
-    constructor(x, y, w, h, {localWidth = 10, localHeight = 10}) {
+    constructor(x, y, w, h, frames, { localWidth = 10, localHeight = 10 }) {
         // pos
         this._x = x;
         this._y = y;
@@ -40,6 +40,8 @@ class Sprite2D {
         this._h = h;
 
         // local render
+        this.frames = frames;
+        this.frame = 0;
         this.localWidth = localWidth;
         this.localHeight = localHeight;
 
@@ -74,92 +76,99 @@ class Sprite2D {
     set ay(v) { this._ay = v; }
     set color(v) { this._color = v; }
 
-    // * klick detektering
-    isPointInside(x, y) {
-        const halfW = this.w / 2;
-        const halfH = this.h / 2;
-
-        return (
-            x >= this.x - halfW &&
-            x <= this.x + halfW &&
-            y >= this.y - halfH &&
-            y <= this.y + halfH
-        );
-    }
-    clicked() {
-        // tom
-    }
-
     // * rendera
-    localRender(ctx){
-        ctx.rect(-this.localWidth/2, -this.localHeight/2, this.localWidth, this.localHeight);
-        ctx.fill();
+    localRender(ctx) {
+        this.frames[Math.floor(this.frame) % this.frames.length](ctx, this);
     }
     render(ctx) {
         ctx.save();
 
-        ctx.beginPath();
         /** @type {CanvasRenderingContext2D} */
-        ctx.fillStyle = this.color;
+        ctx.beginPath();
         ctx.translate(this.x, this.y);
         ctx.scale(this.w / this.localWidth, this.h / this.localHeight);
-        
+
         this.localRender(ctx);
 
         ctx.restore();
     }
+}
 
+class Node {
+    constructor(sprite) {
+        this.sprite = sprite;
+        this.state = "idle";
+    }
+    // * klick detektering
+    isPointInside(x, y) {
+        const halfW = this.sprite.w / 2;
+        const halfH = this.sprite.h / 2;
+
+        return (
+            x >= this.sprite.x - halfW &&
+            x <= this.sprite.x + halfW &&
+            y >= this.sprite.y - halfH &&
+            y <= this.sprite.y + halfH
+        );
+    }
+    clicked(){
+        // tom
+    }
     update(dt) {
         // tom
     }
+    render(ctx) {
+        this.sprite.render(ctx);
+    }
 }
 
-class Star extends Sprite2D {
-    constructor(x, y, w, h, {localWidth = 10, localHeight = 10}, speed) {
-        super(x, y, w, h, {localWidth, localHeight});
-        this._speed = speed;
+class CelestialBody extends Node {
+    constructor(sprite) {
+        super(sprite);
+
+        // update
+        this.vx = 0;
+        this.vy = 0;
+        this._speed = 0;
     }
     get speed() { return this._speed; }
     set speed(v) { this._speed = v; }
 
     clicked() {
-        if (this.w > (canvas.width / 15) && this.h > (canvas.width / 15)) {
-            // hämta index av objekt i array
-            const index = objects.indexOf(this);
-            // ta bort objekt från plats
-            objects.splice(index, 1);
-            console.log(`Exploded star with index: ${index}`);
+        if (this.sprite.w > (canvas.width / 15) && this.sprite.h > (canvas.width / 15)) {
+            this.sprite.frame = 1;
+            this.state = "explode";
             return;
         }
 
         // öka storleken
         const multiplier = 1.5 // öka med 50%
-        this.w *= multiplier;
-        this.h *= multiplier;
+        this.sprite.w *= multiplier;
+        this.sprite.h *= multiplier;
     }
 
     update(dt) {
         // out of bonds
         // höger
-        if (this.x - (this.w / 2) > canvas.width) {
-            this.x = 0 - this.w;
+        if (this.sprite.x - (this.sprite.w / 2) > canvas.width) {
+            this.sprite.x = 0 - this.sprite.w;
         }
         // ned
-        if (this.y - (this.h / 2) > canvas.height) {
-            this.x = canvas.width - this.x;
+        if (this.sprite.y - (this.sprite.h / 2) > canvas.height) {
+            this.sprite.x = canvas.width - this.sprite.x;
         }
         // upp
-        if (this.y + (this.h / 2) < 0) {
-            this.x = canvas.width - this.x;
+        if (this.sprite.y + (this.sprite.h / 2) < 0) {
+            this.sprite.x = canvas.width - this.sprite.x;
         }
         // vänster (safety)
-        if (this.x + (this.w / 2) < -10) {
-            this.x = 0;
+        if (this.sprite.x + (this.sprite.w / 2) < -10) {
+            this.sprite.x = 0;
         }
 
         // hämta vector mot skärmens lägsta mittpunkt
         const focusPoint = new Vector2(canvas.width / 2, canvas.height * 1.2);
-        const gVector = new Vector2(focusPoint.x - this.x, focusPoint.y - this.y);
+        const gVector = new Vector2(focusPoint.x - this.sprite.x, focusPoint.y - this.sprite.y);
 
         // normalisera vektorn
         gVector.normalize();
@@ -172,12 +181,28 @@ class Star extends Sprite2D {
         this.vy = starDir.y * this.speed;
 
         // acceleration
-        this.vx += this.ax * dt;
-        this.vy += this.ay * dt;
+        // //this.vx += this.ax * dt;
+        // //this.vy += this.ay * dt;
 
         // hastighet
-        this.x += this._vx * dt;
-        this.y += this._vy * dt;
+        this.sprite.x += this.vx * dt;
+        this.sprite.y += this.vy * dt;
+
+        if (this.state === "explode") {
+            let animSpeed = 10;
+            this.sprite.frame += dt * animSpeed;
+
+            // Animation är klar
+            // TODO animation när stjärna sprängs
+            if (this.sprite.frame % this.sprite.frames.length === 0) {
+                // hämta index av objekt i array
+                const index = objects.indexOf(this);
+                // ta bort objekt från plats
+                objects.splice(index, 1);
+                console.log(`Exploded star with index: ${index}`);
+                debugPrint("klar");
+            }
+        }
     }
 }
 
@@ -190,31 +215,67 @@ function createStars(amount) {
     const starMaxSize = 8;
     const PLDcurve = 5; // power-law distribution degree of curve e.g ju brantare kurva desto mer resultat nära noll.
 
+    const starFrames = [
+        (ctx, sprite) => {
+            ctx.beginPath();
+            ctx.fillStyle = sprite.color;
+            ctx.rect(-sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
+            ctx.fill();
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame1(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame2(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame3(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame4(ctx);
+        }
+    ]
+
+
     for (let index = 0; index < amount; index++) {
         // Potenslag för storlekar - fler mindre stjärnor, några få stora.
         const starSize = Math.ceil(Math.pow(Math.random(), PLDcurve) * starMaxSize);
-
         const speed = Math.max((Math.pow(Math.random(), 5) * 50), 5); // minst 10px/s
-        const star = new Star(Math.random() * canvas.width, Math.random() * canvas.height, starSize, starSize, {localWidth: 100, localHeight: 100}, speed);
-        star.color = "white";
+
+        // sprite
+        const starSprite = new Sprite2D(Math.random() * canvas.width, Math.random() * canvas.height, starSize, starSize, starFrames, { localWidth: 10, localHeight: 10 });
+        starSprite.color = "white";
+        // logic
+        const star = new CelestialBody(starSprite);
+        star.speed = speed;
 
         objects.push(star);
     }
 }
 
 function spaceBg() {
-    const background = new Sprite2D(canvas.width / 2, canvas.height / 2, canvas.width, canvas.height, {localWidth: 100, localHeight: 100});
-
     // färger från CSS variabler
     const style = window.getComputedStyle(document.body);
     const bgColor = style.getPropertyValue("--grey-5");
     const sbgColor = style.getPropertyValue("--background-color");
-    // skapa gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(50 / canvas.height, bgColor);
-    gradient.addColorStop(1, sbgColor);
-    background.color = gradient;
 
+    const backgroundFrames = [
+        (ctx) => {
+            ctx.beginPath();
+            // skapa gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(50 / canvas.height, bgColor);
+            gradient.addColorStop(1, sbgColor);
+            ctx.fillStyle = gradient;
+            // skapa rektangel
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fill();
+        }
+    ]
+
+    const backgroundSprite = new Sprite2D(0, 0, canvas.width, canvas.height, backgroundFrames, { localWidth: canvas.width, localHeight: canvas.height });
+
+    const background = new Node(backgroundSprite);
     objects.push(background);
 }
 
@@ -242,6 +303,7 @@ function getMousePos(event) {
 function ready() {
     /** @type {HTMLCanvasItem} */
     canvas = document.getElementById("canvas");
+    /** @type {CanvasRenderingContext2D} */
     ctx = canvas.getContext("2d");
     // dynamisk canvas storlek
     canvas.width = window.innerWidth;
