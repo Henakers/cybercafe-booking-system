@@ -7,6 +7,9 @@ const gridColumns = 10
 const gridRows = 10
 // Array som håller alla objekt
 let objects = [];
+// bilder
+const starImage = new Image();
+starImage.src = "../assets/images/star100px.png";
 
 
 // # KLASSER (Inspo från Godot)
@@ -41,7 +44,7 @@ class Sprite2D {
 
         // local render
         this.frames = frames;
-        this.frame = 0;
+        this._frame = 0;
         this.localWidth = localWidth;
         this.localHeight = localHeight;
 
@@ -54,6 +57,8 @@ class Sprite2D {
 
         // style
         this._color = "black";
+        // animation
+        this.framesPerSecond = 12;
     }
     // * getters
     get x() { return this._x; }
@@ -65,6 +70,7 @@ class Sprite2D {
     get ax() { return this._ax; }
     get ay() { return this._ay; }
     get color() { return this._color; }
+    get frame() { return this._frame; }
     // * setters
     set x(v) { this._x = v; }
     set y(v) { this._y = v; }
@@ -75,9 +81,18 @@ class Sprite2D {
     set ax(v) { this._ax = v; }
     set ay(v) { this._ay = v; }
     set color(v) { this._color = v; }
+    set frame(v) {
+        // om frame är större än antal frames, wrappa runt
+        this._frame = v % this.frames.length;
+    }
 
     // * rendera
     localRender(ctx) {
+        // om frames tom -> ingen rendering
+        if (!this.frames) {return}
+        if (this.frames.length === 0) {return}
+
+        // skydda så inte frame blir större än antal frames
         this.frames[Math.floor(this.frame) % this.frames.length](ctx, this);
     }
     render(ctx) {
@@ -135,7 +150,11 @@ class CelestialBody extends Node {
     set speed(v) { this._speed = v; }
 
     clicked() {
-        if (this.sprite.w > (canvas.width / 15) && this.sprite.h > (canvas.width / 15)) {
+        if (this.sprite.w > 80 && this.sprite.h > 80) {
+            // krymp sprite
+            this.sprite.w = 50;
+            this.sprite.h = 50;
+
             this.sprite.frame = 1;
             this.state = "explode";
             return;
@@ -189,18 +208,18 @@ class CelestialBody extends Node {
         this.sprite.y += this.vy * dt;
 
         if (this.state === "explode") {
-            let animSpeed = 10;
-            this.sprite.frame += dt * animSpeed;
+            // öka frame
+            const prevFrame = this.sprite.frame;
+            this.sprite.frame += dt * this.sprite.framesPerSecond;
 
-            // Animation är klar
-            // TODO animation när stjärna sprängs
-            if (this.sprite.frame % this.sprite.frames.length === 0) {
+            // Animation har utfört sin första cykel
+            if (prevFrame > this.sprite.frame) {
+                this.sprite.frame = this.sprite.frames.length - 1;
                 // hämta index av objekt i array
                 const index = objects.indexOf(this);
                 // ta bort objekt från plats
                 objects.splice(index, 1);
                 console.log(`Exploded star with index: ${index}`);
-                debugPrint("klar");
             }
         }
     }
@@ -212,15 +231,15 @@ function degToRad(deg) {
 }
 
 function createStars(amount) {
-    const starMaxSize = 8;
+    // stjärnornas storlek
+    const starMaxSize = 30;
     const PLDcurve = 5; // power-law distribution degree of curve e.g ju brantare kurva desto mer resultat nära noll.
 
     const starFrames = [
         (ctx, sprite) => {
-            ctx.beginPath();
             ctx.fillStyle = sprite.color;
-            ctx.rect(-sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
-            ctx.fill();
+            // ctx.rect(-sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
+            ctx.drawImage(starImage, -sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
         },
         (ctx, sprite) => {
             ExplosionAnimFrame1(ctx);
@@ -239,11 +258,11 @@ function createStars(amount) {
 
     for (let index = 0; index < amount; index++) {
         // Potenslag för storlekar - fler mindre stjärnor, några få stora.
-        const starSize = Math.ceil(Math.pow(Math.random(), PLDcurve) * starMaxSize);
-        const speed = Math.max((Math.pow(Math.random(), 5) * 50), 5); // minst 10px/s
+        const starSize = Math.max(Math.ceil(Math.pow(Math.random(), PLDcurve) * starMaxSize), 5); // minst 5px
+        const speed = Math.max((Math.pow(Math.random(), 5) * 50), 5); // minst 5px/s
 
         // sprite
-        const starSprite = new Sprite2D(Math.random() * canvas.width, Math.random() * canvas.height, starSize, starSize, starFrames, { localWidth: 10, localHeight: 10 });
+        const starSprite = new Sprite2D(Math.random() * canvas.width, Math.random() * canvas.height, starSize, starSize, starFrames, { localWidth: starImage.width, localHeight: starImage.height});
         starSprite.color = "white";
         // logic
         const star = new CelestialBody(starSprite);
