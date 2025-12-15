@@ -9,7 +9,7 @@ const gridRows = 10
 let objects = [];
 // bilder
 const starImage = new Image();
-starImage.src = "../assets/images/star100px.png";
+starImage.src = "assets/images/star100px.png";
 
 
 // # KLASSER (Inspo från Godot)
@@ -239,7 +239,9 @@ function createStars(amount) {
         (ctx, sprite) => {
             ctx.fillStyle = sprite.color;
             // ctx.rect(-sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
-            ctx.drawImage(starImage, -sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
+            if (starImage.complete){
+                ctx.drawImage(starImage, -sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
+            }
         },
         (ctx, sprite) => {
             ExplosionAnimFrame1(ctx);
@@ -338,7 +340,6 @@ function ready() {
     canvas.addEventListener("click", (e) => {
 
         const mousePos = getMousePos(e);
-        //! debugPrint(`Canvas Mouse Pos: [x${mousePos.x}] - [y${mousePos.y}]`);
 
         // iterera alla objekt från sist renderade till först
         for (let i = objects.length - 1; i >= 0; i--) {
@@ -352,6 +353,7 @@ function ready() {
 
     });
 
+    // skapa stjärnor
     createStars(200);
 }
 
