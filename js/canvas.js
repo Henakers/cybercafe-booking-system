@@ -93,9 +93,9 @@ class Sprite2D {
         if (this.frames.length === 0) {return}
 
         // skydda så inte frame blir större än antal frames
-        this.frames[Math.floor(this.frame) % this.frames.length](ctx, this);
+        this.frames[Math.floor(this.frame) % this.frames.length](ctx, this, elapsedTime);
     }
-    render(ctx) {
+    render(ctx, elapsedTime) {
         ctx.save();
 
         /** @type {CanvasRenderingContext2D} */
@@ -103,7 +103,7 @@ class Sprite2D {
         ctx.translate(this.x, this.y);
         ctx.scale(this.w / this.localWidth, this.h / this.localHeight);
 
-        this.localRender(ctx);
+        this.localRender(ctx, elapsedTime);
 
         ctx.restore();
     }
@@ -132,15 +132,14 @@ class Node {
     update(dt) {
         // tom
     }
-    render(ctx) {
-        this.sprite.render(ctx);
+    render(ctx, elapsedTime) {
+        this.sprite.render(ctx, elapsedTime);
     }
 }
 
 class CelestialBody extends Node {
     constructor(sprite) {
         super(sprite);
-
         // update
         this.vx = 0;
         this.vy = 0;
@@ -274,6 +273,27 @@ function createStars(amount) {
     }
 }
 
+function createMoon() {
+    const moonFrames = [
+        (ctx, sprite, elapsedTime) => {
+            ctx.save();
+            ctx.translate(-sprite.localWidth / 2, -sprite.localHeight / 2);
+            ctx.beginPath();
+            ctx.arc(25+(Math.sin(elapsedTime)*5), 25+(Math.cos(elapsedTime)*5), 20, 0, Math.PI * 2);
+            ctx.clip();
+            MoonFrame(ctx);
+            ctx.restore();
+        }
+    ]
+
+    const moonSprite = new Sprite2D(100, 200, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
+
+    const moon = new CelestialBody(moonSprite);
+    moon.speed = 10;
+
+    objects.push(moon);
+}
+
 function spaceBg() {
     // färger från CSS variabler
     const style = window.getComputedStyle(document.body);
@@ -355,6 +375,9 @@ function ready() {
 
     // skapa stjärnor
     createStars(200);
+
+    // skapa en måne
+    createMoon();
 }
 
 let firstFrame = Date.now();
@@ -383,7 +406,7 @@ function process(timestamp) {
         // uppdatera element
         obj.update(dt);
         // rendera element
-        obj.render(ctx);
+        obj.render(ctx, elapsedTime);
     }
 
     window.requestAnimationFrame(process);

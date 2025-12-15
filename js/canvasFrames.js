@@ -1033,10 +1033,10 @@ function MoonFrame(ctx) {
     // background
     ctx.fillStyle = '#efefd5';
     ctx.beginPath();
-    ctx.moveTo(-0, 0);
-    ctx.lineTo(100, 0);
-    ctx.lineTo(100, 100);
-    ctx.lineTo(0, 100);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(50, 0);
+    ctx.lineTo(50, 50);
+    ctx.lineTo(0, 50);
     ctx.lineTo(0, 0);
     ctx.fill();
     // spots
