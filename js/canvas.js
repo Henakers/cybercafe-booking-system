@@ -286,7 +286,7 @@ function createMoon() {
         }
     ]
 
-    const moonSprite = new Sprite2D(100, 200, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
+    const moonSprite = new Sprite2D(200, canvas.height/3, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
 
     const moon = new CelestialBody(moonSprite);
     moon.speed = 10;
