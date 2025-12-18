@@ -157,17 +157,55 @@ function loggedOutView() {
     authButtons.style.display = "flex";
 }
 
-function alertMsg(msg, status = error) {
-    const el = document.createElement("div");
-    el.classList.add("alert");
+/**
+ * Displays an alert message.
+ * @param {*} msg 
+ * @param {*} status 
+ */
+function alertMsg(msg = "något gick fel!", status = "error") {
+    // alert element
+    const alert = document.createElement("div");
+    alert.classList.add("alert");
     // status: error, success, warning
-    el.classList.add(`alert--${status}`);
-    el.textContent = msg;
-    document.body.appendChild(el);
+    alert.classList.add(`alert--${status}`);
+    
+    // alert icon
+    const alertIcon = document.createElement("div");
+    alertIcon.classList.add("material-icons");
+    alertIcon.classList.add("alert__icon");
+    alertIcon.textContent = status === "success" ? "check" : status;
+    alert.appendChild(alertIcon);
+
+    // alert message
+    const alertMsg = document.createElement("div");
+    alertMsg.classList.add("alert__message");
+    alertMsg.textContent = msg;
+    alert.appendChild(alertMsg);
+
+    // alert close btn
+    const closeBtn = document.createElement("div");
+    closeBtn.classList.add("material-icons");
+    closeBtn.classList.add("alert__close");
+    closeBtn.textContent = "close";
+    closeBtn.addEventListener("click", () => {
+        closeAllAlerts();
+    });
+    alert.appendChild(closeBtn);
+
+    
+    document.body.appendChild(alert);
 
     setTimeout(() => {
-        el.remove();
+        alert.remove();
     }, 3000);
+}
+
+function closeAllAlerts() {
+    // hämta alla alerts i en array
+    const alertElements = Array.from(document.getElementsByClassName("alert"));
+    alertElements.forEach(element => {
+        element.remove();
+    });
 }
 
 // hack hitmarker click
