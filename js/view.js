@@ -192,7 +192,6 @@ function alertMsg(msg = "något gick fel!", status = "error") {
     });
     alert.appendChild(closeBtn);
 
-    
     document.body.appendChild(alert);
 
     setTimeout(() => {
