@@ -294,6 +294,18 @@ function createMoon() {
             MoonFrame(ctx);
 
             ctx.restore();
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame1(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame2(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame3(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame4(ctx);
         }
     ]
 
