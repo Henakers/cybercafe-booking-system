@@ -237,9 +237,14 @@ function createStars(amount) {
     const starFrames = [
         (ctx, sprite) => {
             ctx.fillStyle = sprite.color;
-            // ctx.rect(-sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
             if (starImage.complete){
-                ctx.drawImage(starImage, -sprite.localWidth / 2, -sprite.localHeight / 2, sprite.localWidth, sprite.localHeight);
+                ctx.drawImage(
+                    starImage, 
+                    -sprite.localWidth / 2, 
+                    -sprite.localHeight / 2, 
+                    sprite.localWidth, 
+                    sprite.localHeight
+                );
             }
         },
         (ctx, sprite) => {
