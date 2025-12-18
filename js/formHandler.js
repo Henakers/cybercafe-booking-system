@@ -141,6 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // # BOOK-FORM
+    // date picker
+    document.getElementById("datepicker-booking").addEventListener("click", () => {
+        const e = document.getElementById("booking-date");
+        e.showPicker();
+    })
     // ladda in resurser i dropdown
     displayResourceOptions();
     const bookingSelectElement = document.getElementById("booking-resource-options");
@@ -424,10 +429,4 @@ function renderLoadingAnimation(button) {
     // rensar text i
 
     // visar loading animation
-}
-
-
-function openDate(){
-    const e = document.getElementById("date-picker");
-    e.showPicker();
 }
