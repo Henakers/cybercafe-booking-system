@@ -276,12 +276,14 @@ function createStars(amount) {
 function createMoon() {
     const moonFrames = [
         (ctx, sprite, elapsedTime) => {
+            elapsedTime *= 0.6; // anim speed
             ctx.save();
-            ctx.translate((-sprite.localWidth / 2) - (Math.sin(elapsedTime)*5), (-sprite.localHeight / 2) - (Math.cos(elapsedTime)*5));
+            // offset animeringen av clip
+            ctx.translate((-sprite.localWidth / 2) - (Math.cos(elapsedTime)*5), (-sprite.localHeight / 2) - (Math.sin(elapsedTime)*5));
 
             ctx.beginPath();
-            // clip area animeras snurrandes motsol
-            ctx.arc(25+(Math.sin(elapsedTime)*5), 25+(Math.cos(elapsedTime)*5), 20, 0, Math.PI * 2);
+            // clip area animeras snurrandes medsols
+            ctx.arc(25+(Math.cos(elapsedTime)*5), 25+(Math.sin(elapsedTime)*5), 20, 0, Math.PI * 2);
             
             ctx.clip();
             MoonFrame(ctx);
@@ -290,7 +292,7 @@ function createMoon() {
         }
     ]
 
-    const moonSprite = new Sprite2D(canvas.width-200, canvas.height/3, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
+    const moonSprite = new Sprite2D(200, canvas.height/3, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
 
     const moon = new CelestialBody(moonSprite);
     moon.speed = 10;
@@ -382,6 +384,9 @@ function ready() {
 
     // skapa en måne
     createMoon();
+
+    // * starta programmet (loop)
+    window.requestAnimationFrame(process);
 }
 
 let firstFrame = Date.now();
@@ -423,9 +428,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // * initiera programmet
     ready();
-
-    // * starta programmet (loop)
-    window.requestAnimationFrame(process);
 });
 
 
