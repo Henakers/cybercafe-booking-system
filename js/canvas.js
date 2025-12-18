@@ -277,16 +277,20 @@ function createMoon() {
     const moonFrames = [
         (ctx, sprite, elapsedTime) => {
             ctx.save();
-            ctx.translate(-sprite.localWidth / 2, -sprite.localHeight / 2);
+            ctx.translate((-sprite.localWidth / 2) - (Math.sin(elapsedTime)*5), (-sprite.localHeight / 2) - (Math.cos(elapsedTime)*5));
+
             ctx.beginPath();
+            // clip area animeras snurrandes motsol
             ctx.arc(25+(Math.sin(elapsedTime)*5), 25+(Math.cos(elapsedTime)*5), 20, 0, Math.PI * 2);
+            
             ctx.clip();
             MoonFrame(ctx);
+
             ctx.restore();
         }
     ]
 
-    const moonSprite = new Sprite2D(200, canvas.height/3, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
+    const moonSprite = new Sprite2D(canvas.width-200, canvas.height/3, 100, 100, moonFrames, {localWidth: 50, localHeight: 50});
 
     const moon = new CelestialBody(moonSprite);
     moon.speed = 10;
