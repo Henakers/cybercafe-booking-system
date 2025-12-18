@@ -31,7 +31,7 @@ async function createCustomer(submitButton) {
     // TODO Starta loading animation
     // submitButton -> add loading
     // * koppla mot API
-    submitButton && submitButton.classList.add("btn--outlined");
+    submitButton && submitButton.classList.add("btn--loading");
     try {
         // efterfrågan till API
         const response = await fetch(`${apiUrl}makecustomer_XML.php`, {
@@ -59,7 +59,7 @@ async function createCustomer(submitButton) {
     } finally {
         // TODO Avbryt loading animation
         // submitButton -> remove loading
-        submitButton && submitButton.classList.remove("btn--outlined");
+        submitButton && submitButton.classList.remove("btn--loading");
     }
 }
 
@@ -80,7 +80,7 @@ async function fetchUser(submitButton) {
     // TODO Starta loading animation
     // submitButton -> add loading
     // * koppla mot API
-    submitButton && submitButton.classList.add("btn--outlined");
+    submitButton && submitButton.classList.add("btn--loading");
     try {
         const response = await fetch(`${apiUrl}getcustomer_XML.php`, {
             method: 'POST',
@@ -110,7 +110,7 @@ async function fetchUser(submitButton) {
     } finally {
         // TODO Avbryt loading animation
         // submitButton -> remove loading
-        submitButton && submitButton.classList.remove("btn--outlined");
+        submitButton && submitButton.classList.remove("btn--loading");
     }
 }
 
@@ -183,7 +183,7 @@ async function fetchResources(searchString) {
 /**
  * Creates a booking for the logged in user, chosen date and chosen resource.
  */
-async function createBooking() {
+async function createBooking(submitButton) {
     // * inputs i login form
     const date = document.getElementById("booking-date").value;
     const resourceId = document.getElementById("booking-resource-options").value;
@@ -204,7 +204,7 @@ async function createBooking() {
     }
 
     // TODO Starta loading animation
-
+    submitButton && submitButton.classList.add("btn--loading");
     // * koppla mot API
     try {
         const response = await fetch(`${apiUrl}makebooking_XML.php`, {
@@ -228,7 +228,7 @@ async function createBooking() {
         // om attribut remaining är mindre eller lika med 0
         if (resultNode.getAttribute("remaining") <= 0) throw new Error(`Alla [${resultNode.getAttribute("size")}] platser bokade`);
 
-        alertMsg("Bokad", "success");
+        alertMsg("Bokade resursen", "success");
         return resultNode.getAttribute("bookingcost") || false;
         
     } catch (error) {
@@ -238,6 +238,7 @@ async function createBooking() {
 
     } finally {
         // TODO Avbryt loading animation
+        submitButton && submitButton.classList.remove("btn--loading");
     }
 }
 

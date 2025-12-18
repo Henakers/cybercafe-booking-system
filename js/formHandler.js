@@ -154,7 +154,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // skicka bokningen till API
     document.getElementById("booking-submit").addEventListener("click", (event) => {
-        createBooking();
+        // submit button
+        const submitButton = event.currentTarget;
+        createBooking(submitButton)
     });
 
 
