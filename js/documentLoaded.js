@@ -3,6 +3,7 @@
  * @param {Boolean} noNewRow
  */
 function debugPrint(text, validate){
+    return;
     const printerElement = document.getElementById("print-area")
     switch (validate) {
         case "success":
@@ -17,11 +18,8 @@ function debugPrint(text, validate){
     }
     printerElement.innerHTML += `<br>`;
 }
-function clearPrinter(){
-    document.getElementById("print-area").innerHTML = "";
-}
 
-function openDate(){
-    const e = document.getElementById("date-picker");
-    e.showPicker();
+function clearPrinter(){
+    return;
+    document.getElementById("print-area").innerHTML = "";
 }

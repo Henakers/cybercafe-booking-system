@@ -80,7 +80,7 @@ function showPage(pageid, isPopStateEvent = false, modalId = null) {
     // historik hantering
     if (!isPopStateEvent) {
         history.pushState({ page: pageid, modal: modalId }, "Titel: "+pageid, "");
-        debugPrint(`Sparade state för sida: [${pageid}] och modal: [${modalId}]`);
+        // // debugPrint(`Sparade state för sida: [${pageid}] och modal: [${modalId}]`);
     }
 }
 

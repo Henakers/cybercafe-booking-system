@@ -425,3 +425,9 @@ function renderLoadingAnimation(button) {
 
     // visar loading animation
 }
+
+
+function openDate(){
+    const e = document.getElementById("date-picker");
+    e.showPicker();
+}

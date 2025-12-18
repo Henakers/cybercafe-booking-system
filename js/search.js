@@ -93,7 +93,6 @@ function openSearchField(noAnimationOpening) {
         // closeBtn
         closeBtn.classList.add("active");
 
-        debugPrint(`search field opened from local storage`);
         return;
     }
 
@@ -163,9 +162,6 @@ function closeSearchField(){
     // tar bort sökvärdet ur local storage
     localStorage.removeItem("search-state");
     localStorage.removeItem("search-input");
-
-    // ! Debug/info
-    debugPrint("Stängde sökfältet");
 }
 
 function addDividerToParent(parent) {

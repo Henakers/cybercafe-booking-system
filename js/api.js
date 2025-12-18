@@ -77,8 +77,6 @@ async function fetchUser(submitButton) {
         customerID: `0.b23marhe.${fName}.${lName}`
     }
 
-    debugPrint(JSON.stringify(input));
-
     // TODO Starta loading animation
     // submitButton -> add loading
     // * koppla mot API
