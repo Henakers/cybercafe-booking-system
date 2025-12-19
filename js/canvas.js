@@ -89,7 +89,7 @@ class Sprite2D {
     }
 
     // * rendera
-    localRender(ctx) {
+    localRender(ctx, elapsedTime) {
         // om frames tom -> ingen rendering
         if (!this.frames) {return}
         if (this.frames.length === 0) {return}
