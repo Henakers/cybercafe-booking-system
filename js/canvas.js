@@ -10,6 +10,8 @@ let objects = [];
 // bilder
 const starImage = new Image();
 starImage.src = "assets/images/star100px.png";
+const galaxyImage = new Image();
+galaxyImage.src = "assets/images/galaxy.svg";
 
 
 // # KLASSER (Inspo från Godot)
@@ -317,6 +319,45 @@ function createMoon() {
     objects.push(moon);
 }
 
+function createGalaxy() {
+    const galaxyFrames = [
+        (ctx, sprite, elapsedTime) => {
+            ctx.save();
+            ctx.fillStyle = sprite.color;
+            if (galaxyImage.complete){
+                ctx.drawImage(
+                    galaxyImage,
+                    -sprite.localWidth / 2, 
+                    -sprite.localHeight / 2, 
+                    sprite.localWidth, 
+                    sprite.localHeight
+                );
+            }
+            ctx.restore();
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame1(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame2(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame3(ctx);
+        },
+        (ctx, sprite) => {
+            ExplosionAnimFrame4(ctx);
+        }
+    ]
+
+    const galaxySprite = new Sprite2D(canvas.width - 200, canvas.height/3, 100, 100, galaxyFrames, {localWidth: 50, localHeight: 50});
+    galaxySprite.color = "white";
+
+    const galaxy = new CelestialBody(galaxySprite);
+    galaxy.speed = 1;
+
+    objects.push(galaxy);
+}
+
 function spaceBg() {
     // färger från CSS variabler
     const style = window.getComputedStyle(document.body);
@@ -395,6 +436,9 @@ function ready() {
         }
 
     });
+
+    // skapa en galax
+    createGalaxy();
 
     // skapa stjärnor
     createStars(200);
