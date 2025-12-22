@@ -434,7 +434,6 @@ function ready() {
                 return;
             }
         }
-
     });
 
     // skapa en galax
