@@ -1,8 +1,6 @@
 var appType = "b23marhe_cyberkafe";
 var apiUrl = "../API/booking/";
 
-document.addEventListener("DOMContentLoaded", fetchUserBookings);
-
 /**
  * Creates a customer. Adds a loading animation to the submit button.
  * @param {HTMLButtonElement} submitButton 

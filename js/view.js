@@ -34,7 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // # LOGOUT
     document.getElementById("logout-button").addEventListener("click", () => {
-        localStorage.removeItem("user-id");
+        // localStorage.removeItem("user-id");
+        localStorage.clear();
         loggedOutView();
     });
 
@@ -98,6 +99,11 @@ function openModal(modalId) {
 
     // spara i local storage vilken modal som är öppnad
     localStorage.setItem("user-current-modal", modalId);
+
+    if (modalId === "profile-modal") {
+        document.getElementById("profile-user-id").textContent = localStorage.getItem("user-id") || "not logged in";
+        fetchUserBookings();
+    }
 }
 
 /**
